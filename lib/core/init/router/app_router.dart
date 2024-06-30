@@ -10,50 +10,54 @@ import 'package:go_router/go_router.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 class AppRouter {
-  final router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
-    initialLocation: RouterEnums.onboardingScreen.routeName,
-    routes: [
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: RouterEnums.dashboardScreen.routeName,
-        name: RouterEnums.dashboardScreen.routeName,
-        pageBuilder: (context, state) => customPageBuilderWidget(
-          context,
-          state,
-          const DashboardView(),
-        ),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: RouterEnums.onboardingScreen.routeName,
-        name: RouterEnums.onboardingScreen.routeName,
-        pageBuilder: (context, state) => customPageBuilderWidget(
-          context,
-          state,
-          const OnboardingView(),
-        ),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: RouterEnums.speakingScreen.routeName,
-        name: RouterEnums.speakingScreen.routeName,
-        pageBuilder: (context, state) => customPageBuilderWidget(
-          context,
-          state,
-          const SpeakingView(),
-        ),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: RouterEnums.translateResultScreen.routeName,
-        name: RouterEnums.translateResultScreen.routeName,
-        pageBuilder: (context, state) => customPageBuilderWidget(
-          context,
-          state,
-          const TranslateResultView(),
-        ),
-      ),
-    ],
-  );
+  final String initialRouteName;
+
+  AppRouter(this.initialRouteName);
+
+  GoRouter get router => GoRouter(
+        navigatorKey: _rootNavigatorKey,
+        initialLocation: initialRouteName,
+        routes: [
+          GoRoute(
+            parentNavigatorKey: _rootNavigatorKey,
+            path: RouterEnums.dashboardScreen.routeName,
+            name: RouterEnums.dashboardScreen.routeName,
+            pageBuilder: (context, state) => customPageBuilderWidget(
+              context,
+              state,
+              const DashboardView(),
+            ),
+          ),
+          GoRoute(
+            parentNavigatorKey: _rootNavigatorKey,
+            path: RouterEnums.onboardingScreen.routeName,
+            name: RouterEnums.onboardingScreen.routeName,
+            pageBuilder: (context, state) => customPageBuilderWidget(
+              context,
+              state,
+              const OnboardingView(),
+            ),
+          ),
+          GoRoute(
+            parentNavigatorKey: _rootNavigatorKey,
+            path: RouterEnums.speakingScreen.routeName,
+            name: RouterEnums.speakingScreen.routeName,
+            pageBuilder: (context, state) => customPageBuilderWidget(
+              context,
+              state,
+              const SpeakingView(),
+            ),
+          ),
+          GoRoute(
+            parentNavigatorKey: _rootNavigatorKey,
+            path: RouterEnums.translateResultScreen.routeName,
+            name: RouterEnums.translateResultScreen.routeName,
+            pageBuilder: (context, state) => customPageBuilderWidget(
+              context,
+              state,
+              const TranslateResultView(),
+            ),
+          ),
+        ],
+      );
 }
