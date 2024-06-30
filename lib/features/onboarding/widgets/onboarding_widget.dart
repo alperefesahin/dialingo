@@ -1,8 +1,6 @@
-import 'package:dialingo/core/constants/enums/router_enums.dart';
 import 'package:dialingo/core/design_system/colors/colors.dart';
 import 'package:dialingo/core/design_system/components/dialingo_text.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -10,11 +8,13 @@ class OnboardingWidget extends StatefulWidget {
   const OnboardingWidget({
     super.key,
     required this.onTab,
+    required this.onPressedGetStarted,
     required this.index,
     required this.activePage,
   });
 
   final VoidCallback onTab;
+  final VoidCallback onPressedGetStarted;
   final int index;
   final int activePage;
 
@@ -129,9 +129,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> with TickerProvider
                         height: 48,
                         width: size.width / 2,
                         child: TextButton(
-                          onPressed: () {
-                            context.goNamed(RouterEnums.dashboardScreen.routeName);
-                          },
+                          onPressed: widget.onPressedGetStarted,
                           style: TextButton.styleFrom(
                             backgroundColor: blue,
                             shape: RoundedRectangleBorder(
@@ -155,28 +153,23 @@ class _OnboardingWidgetState extends State<OnboardingWidget> with TickerProvider
   }
 }
 
-Color hexToColor(String hex) {
-  return Color(int.parse(hex.substring(1), radix: 16) + (hex.length == 7 ? 0xFF000000 : 0x00000000));
-}
-
-
 final List<Map<String, dynamic>> _pages = [
   {
     'title': 'Translation for Everyone',
     'animation': 'assets/lottie/onboarding1.json',
     'description':
-    'Discover seamless communication across languages with our intuitive translation app. Explore translations with country flags, making it effortless to understand and be understood anywhere you go.',
+        'Discover seamless communication across languages with our intuitive translation app. Explore translations with country flags, making it effortless to understand and be understood anywhere you go.',
   },
   {
     'title': 'Voice Chat Translation',
     'animation': 'assets/lottie/onboarding2.json',
     'description':
-    'Explore instant communication through voice chat translation. Speak naturally and let our app convert your words into another language in real-time, breaking down language barriers effortlessly.',
+        'Explore instant communication through voice chat translation. Speak naturally and let our app convert your words into another language in real-time, breaking down language barriers effortlessly.',
   },
   {
     'title': 'Powered by AI',
     'animation': 'assets/lottie/onboarding3.json',
     'description':
-    'Unlock the future of translation with our AI-powered app. Our technology ensures accurate and efficient translations, providing fast and reliable results for all your communication needs.',
+        'Unlock the future of translation with our AI-powered app. Our technology ensures accurate and efficient translations, providing fast and reliable results for all your communication needs.',
   },
 ];

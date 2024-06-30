@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({super.key, required this.initialRouteName});
+
+  final String initialRouteName;
 
   @override
   Widget build(BuildContext context) {
-    final appRouterConfig = getIt<AppRouter>();
+    final appRouterConfig = getIt<AppRouter>(param1: initialRouteName);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
