@@ -2,7 +2,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dialingo/core/constants/enums/router_enums.dart';
 import 'package:dialingo/core/design_system/colors/colors.dart';
 import 'package:dialingo/core/design_system/components/bare_bones_scaffold.dart';
+import 'package:dialingo/features/speaking/speaking_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -13,21 +15,21 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-class SpeakingView extends StatefulWidget {
+class SpeakingView extends ConsumerStatefulWidget {
   const SpeakingView({super.key});
 
   @override
-  State<SpeakingView> createState() => _SpeakingViewState();
+  ConsumerState<SpeakingView> createState() => _SpeakingViewState();
 }
 
-class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMixin {
+class _SpeakingViewState extends ConsumerState<SpeakingView> with TickerProviderStateMixin {
   late final AnimationController _controllerForListenAnimation;
   late final AnimationController _controllerForSpeakAnimation;
   bool _isSendButtonEnabled = false;
 
   final _speechToText = SpeechToText();
   bool _speechEnabled = true;
-  String _collectedWords = '';
+  String _collectedWords = 'how are you today in turkish';
 
   @override
   void initState() {
@@ -87,6 +89,19 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+
+    ref.listen(speakingViewModelProvider, (p, c) {
+      if (c.error.isNotEmpty) {
+        BotToast.showSimpleNotification(title: 'Error!');
+        print(c.error);
+      }
+
+      if (p?.speakingModel != c.speakingModel && c.speakingModel.translatedText.isNotEmpty) {
+        context.goNamed(RouterEnums.translateResultScreen.routeName, extra: c.speakingModel.translatedText);
+
+        ref.read(speakingViewModelProvider.notifier).resetState();
+      }
+    });
 
     return DialingoScaffold(
       backgroundColor: black,
@@ -174,11 +189,7 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
                       radius: 24,
                       backgroundColor: black,
                       child: Center(
-                        child: Icon(
-                          LucideIcons.trash2,
-                          size: 20,
-                          color: white,
-                        ),
+                        child: Icon(LucideIcons.trash2, size: 20, color: white),
                       ),
                     ),
                   ),
@@ -216,9 +227,9 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
 
                       _stopListening();
 
-                      /*  Future.delayed(const Duration(seconds: 5)).then((value) {
-                      context.goNamed(RouterEnums.translateResultScreen.routeName);
-                    });*/
+                      ref
+                          .read(speakingViewModelProvider.notifier)
+                          .translateTextViaPrompt(promtFromUser: _collectedWords);
                     } else {
                       if (mounted) {
                         context.goNamed(RouterEnums.dashboardScreen.routeName);
@@ -232,11 +243,7 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
                       radius: 24,
                       backgroundColor: black,
                       child: Center(
-                        child: Icon(
-                          LucideIcons.arrowUp,
-                          size: 24,
-                          color: white,
-                        ),
+                        child: Icon(LucideIcons.arrowUp, size: 24, color: white),
                       ),
                     ),
                   ),

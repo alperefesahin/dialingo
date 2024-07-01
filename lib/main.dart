@@ -7,6 +7,7 @@ import 'package:dialingo/data/local/onboarding/onboarding_hive_model.dart';
 import 'package:dialingo/data/repository/di_repository/dependency_injector_repository.dart';
 import 'package:dialingo/domain/di_usecase/dependency_injector_usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
@@ -31,6 +32,7 @@ void main() async {
       ? RouterEnums.dashboardScreen.routeName
       : RouterEnums.onboardingScreen.routeName;
 
+  await dotenv.load(fileName: 'keys.env');
   runApp(ProviderScope(child: App(initialRouteName: initialRouteName)));
 }
 
