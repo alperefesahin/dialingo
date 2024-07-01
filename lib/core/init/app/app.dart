@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dialingo/core/di/dependency_injector.dart';
 import 'package:dialingo/core/init/router/app_router.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class App extends StatelessWidget {
       routerConfig: appRouterConfig.router,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: BotToastInit(),
     );
   }
 }
