@@ -8,6 +8,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:dialingo/core/design_system/components/custom_divider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class SpeakingView extends StatefulWidget {
   const SpeakingView({super.key});
@@ -17,22 +19,34 @@ class SpeakingView extends StatefulWidget {
 }
 
 class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMixin {
-  late final AnimationController _controllerForListen;
-  late final AnimationController _controllerForSpeak;
+  late final AnimationController _controllerForListenAnimation;
+  late final AnimationController _controllerForSpeakAnimation;
   bool _isSendButtonEnabled = false;
+
+  final _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _collectedWords = '';
 
   @override
   void initState() {
     super.initState();
 
-    _controllerForListen = AnimationController(vsync: this);
-    _controllerForSpeak = AnimationController(vsync: this);
+    _controllerForListenAnimation = AnimationController(vsync: this);
+    _controllerForSpeakAnimation = AnimationController(vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _speechToText.initialize().then((enabled) async {
+        if (enabled) {
+          await _speechToText.listen(onResult: _onSpeechResult);
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
-    _controllerForListen.dispose();
-    _controllerForSpeak.dispose();
+    _controllerForListenAnimation.dispose();
+    _controllerForSpeakAnimation.dispose();
 
     super.dispose();
   }
@@ -55,13 +69,13 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
                 height: size.height / 2.2,
                 repeat: true,
                 frameRate: FrameRate.max,
-                controller: _controllerForListen,
+                controller: _controllerForListenAnimation,
                 onLoaded: (composition) {
-                  _controllerForListen
+                  _controllerForListenAnimation
                     ..duration = composition.duration
                     ..forward();
 
-                  _controllerForListen.repeat();
+                  _controllerForListenAnimation.repeat();
                 },
               ),
             ),
@@ -132,13 +146,13 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
                   height: size.height / 6,
                   repeat: true,
                   frameRate: FrameRate.max,
-                  controller: _controllerForSpeak,
+                  controller: _controllerForSpeakAnimation,
                   onLoaded: (composition) {
-                    _controllerForSpeak
+                    _controllerForSpeakAnimation
                       ..duration = composition.duration
                       ..forward();
 
-                    _controllerForSpeak.repeat();
+                    _controllerForSpeakAnimation.repeat();
                   },
                 ),
               ),
@@ -152,11 +166,15 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
                       _isSendButtonEnabled = true;
                     });
 
-                    _controllerForSpeak.reset();
+                    _controllerForSpeakAnimation.reset();
 
-                    Future.delayed(const Duration(seconds: 5)).then((value) {
+                    _stopListening();
+
+                    print("collected words: ${_collectedWords}");
+
+                    /*  Future.delayed(const Duration(seconds: 5)).then((value) {
                       context.goNamed(RouterEnums.translateResultScreen.routeName);
-                    });
+                    });*/
                   },
                   child: const CircleAvatar(
                     radius: 25,
@@ -180,5 +198,15 @@ class _SpeakingViewState extends State<SpeakingView> with TickerProviderStateMix
         ],
       ),
     );
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _collectedWords = result.recognizedWords;
+    });
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
   }
 }
