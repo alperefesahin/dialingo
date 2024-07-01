@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dialingo/core/constants/enums/router_enums.dart';
 import 'package:dialingo/core/init/router/custom_page_builder_widget.dart';
 import 'package:dialingo/features/dashboard/dashboard_view.dart';
@@ -17,6 +18,7 @@ class AppRouter {
   GoRouter get router => GoRouter(
         navigatorKey: _rootNavigatorKey,
         initialLocation: initialRouteName,
+        observers: [BotToastNavigatorObserver()],
         routes: [
           GoRoute(
             parentNavigatorKey: _rootNavigatorKey,
