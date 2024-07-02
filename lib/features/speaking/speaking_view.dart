@@ -29,7 +29,7 @@ class _SpeakingViewState extends ConsumerState<SpeakingView> with TickerProvider
 
   final _speechToText = SpeechToText();
   bool _speechEnabled = true;
-  String _collectedWords = 'how are you today in turkish';
+  String _collectedWords = '';
 
   @override
   void initState() {
@@ -93,13 +93,25 @@ class _SpeakingViewState extends ConsumerState<SpeakingView> with TickerProvider
     ref.listen(speakingViewModelProvider, (p, c) {
       if (c.error.isNotEmpty) {
         BotToast.showSimpleNotification(title: 'Error!');
-        print(c.error);
       }
 
       if (p?.speakingModel != c.speakingModel && c.speakingModel.translatedText.isNotEmpty) {
         context.goNamed(RouterEnums.translateResultScreen.routeName, extra: c.speakingModel.translatedText);
 
         ref.read(speakingViewModelProvider.notifier).resetState();
+      }
+
+      if (c.speakingModel.finishReason != 'STOP' && c.speakingModel.finishReason.isNotEmpty) {
+        BotToast.showSimpleNotification(
+            title: c.speakingModel.finishReason,
+            duration: const Duration(seconds: 2),
+            onClose: () {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  context.goNamed(RouterEnums.dashboardScreen.routeName);
+                }
+              });
+            });
       }
     });
 
@@ -219,17 +231,21 @@ class _SpeakingViewState extends ConsumerState<SpeakingView> with TickerProvider
                   highlightColor: transparent,
                   onTap: () async {
                     if (_speechEnabled) {
-                      setState(() {
-                        _isSendButtonEnabled = true;
-                      });
+                      if (_collectedWords.isNotEmpty) {
+                        setState(() {
+                          _isSendButtonEnabled = true;
+                        });
 
-                      _controllerForSpeakAnimation.reset();
+                        _controllerForSpeakAnimation.reset();
 
-                      _stopListening();
+                        _stopListening();
 
-                      ref
-                          .read(speakingViewModelProvider.notifier)
-                          .translateTextViaPrompt(promtFromUser: _collectedWords);
+                        ref
+                            .read(speakingViewModelProvider.notifier)
+                            .translateTextViaPrompt(promtFromUser: _collectedWords);
+                      } else {
+                        BotToast.showSimpleNotification(title: 'Please speak something to translate.');
+                      }
                     } else {
                       if (mounted) {
                         context.goNamed(RouterEnums.dashboardScreen.routeName);

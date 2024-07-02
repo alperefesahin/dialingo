@@ -1,15 +1,18 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 abstract class IGeminiApiRepository {
-  Future<GenerateContentResponse> generateContent({required String prompt});
+  final Gemini gemini;
+
+  IGeminiApiRepository(this.gemini);
+
+  Future<Candidates?> generateText({required String text});
 }
 
 class GeminiApiRepository extends IGeminiApiRepository {
-  final model = GenerativeModel(model: 'gemini-pro-vision', apiKey: dotenv.env['GEMINI_API_KEY']!);
+  GeminiApiRepository(super.gemini);
 
   @override
-  Future<GenerateContentResponse> generateContent({required String prompt}) {
-    return model.generateContent([Content.text(prompt)]);
+  Future<Candidates?> generateText({required String text}) {
+    return gemini.text(text);
   }
 }

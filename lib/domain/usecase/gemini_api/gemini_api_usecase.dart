@@ -6,12 +6,13 @@ class GeminiApiUseCase {
 
   GeminiApiUseCase(this.geminiApiRepository);
 
-  Future<GeminiGenerationModel> generateContent({required String prompt}) async {
-    final generateContentResponse = await geminiApiRepository.generateContent(prompt: prompt);
+  Future<GeminiGenerationModel> generateText({required String text}) async {
+    final candidatesResponse = await geminiApiRepository.generateText(text: text);
 
     final GeminiGenerationModel geminiGenerationModel = GeminiGenerationModel(
-      responseTextFromGemini: generateContentResponse.text,
-      promptFeedback: generateContentResponse.promptFeedback,
+      responseTextFromGemini: candidatesResponse?.content?.parts?.last.text,
+      index: candidatesResponse?.index,
+      finishReason: candidatesResponse?.finishReason,
     );
 
     return geminiGenerationModel;

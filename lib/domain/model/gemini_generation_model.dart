@@ -1,8 +1,7 @@
-import 'package:google_generative_ai/google_generative_ai.dart';
-
 class GeminiGenerationModel {
   final String? responseTextFromGemini;
-  final PromptFeedback? promptFeedback;
+  final String? finishReason;
+  final int? index;
 
-  GeminiGenerationModel({required this.responseTextFromGemini, required this.promptFeedback});
+  GeminiGenerationModel({required this.responseTextFromGemini, required this.index, required this.finishReason});
 }

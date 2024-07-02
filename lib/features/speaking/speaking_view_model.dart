@@ -13,24 +13,29 @@ class SpeakingViewModel extends StateNotifier<SpeakingState> {
 
   final GeminiApiUseCase geminiApiUseCase = getIt<GeminiApiUseCase>();
 
-  void resetState () {
+  void resetState() {
     state = SpeakingState.initial();
   }
 
   Future<void> translateTextViaPrompt({required String promtFromUser}) async {
+    resetState();
+
     state = state.copyWith(isLoading: true);
 
     const constantPrompt =
-        'hello gemini! Please translate the following sentences to desired mentioned language, and tell me the translation exactly, without saying any other sentences.';
+        ''' hello gemini! Please translate the following sentences to desired mentioned language, and tell me 
+        the translation exactly, without saying any other sentences, and mentioning the desired language.
+        Also translate and give the only core sentences that person says, write the language below in parenthesis''';
+
     final finalPrompt = '$constantPrompt $promtFromUser';
 
     try {
-      // to show properly, the loading indicator is working
-      await Future.delayed(const Duration(seconds: 2));
+      final geminiGenerationModel = await geminiApiUseCase.generateText(text: finalPrompt);
 
-      final geminiGenerationModel = await geminiApiUseCase.generateContent(prompt: finalPrompt);
-
-      final speakingModel = SpeakingModel(translatedText: geminiGenerationModel.responseTextFromGemini ?? '');
+      final speakingModel = SpeakingModel(
+        translatedText: geminiGenerationModel.responseTextFromGemini ?? '',
+        finishReason: geminiGenerationModel.finishReason ?? '',
+      );
 
       state = state.copyWith(isLoading: false, speakingModel: speakingModel);
     } catch (e) {

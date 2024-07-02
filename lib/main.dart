@@ -8,6 +8,7 @@ import 'package:dialingo/data/repository/di_repository/dependency_injector_repos
 import 'package:dialingo/domain/di_usecase/dependency_injector_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
@@ -33,6 +34,11 @@ void main() async {
       : RouterEnums.onboardingScreen.routeName;
 
   await dotenv.load(fileName: 'keys.env');
+
+  final geminiApiKey = dotenv.env['GEMINI_API_KEY']!;
+
+  Gemini.init(apiKey: geminiApiKey);
+
   runApp(ProviderScope(child: App(initialRouteName: initialRouteName)));
 }
 

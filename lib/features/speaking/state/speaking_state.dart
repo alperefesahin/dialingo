@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 class SpeakingState extends Equatable {
   const SpeakingState({
-    this.speakingModel = const SpeakingModel(translatedText: ''),
+    this.speakingModel = const SpeakingModel(translatedText: '', finishReason: ''),
     this.error = '',
     this.isLoading = false,
   });
@@ -28,7 +28,7 @@ class SpeakingState extends Equatable {
   }
 
   factory SpeakingState.initial() => const SpeakingState(
-        speakingModel: SpeakingModel(translatedText: ''),
+        speakingModel: SpeakingModel(translatedText: '', finishReason: ''),
         error: '',
         isLoading: false,
       );
