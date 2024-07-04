@@ -57,7 +57,7 @@ class AppRouter {
             pageBuilder: (context, state) => customPageBuilderWidget(
               context,
               state,
-              const TranslateResultView(),
+              TranslateResultView(translatedText: state.extra as String),
             ),
           ),
         ],
